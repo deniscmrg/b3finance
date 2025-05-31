@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gráfico de Ação</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .filtros {
+            margin-bottom: 20px;
+        }
+
+        .grafico-container {
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        input, button {
+            margin: 5px;
+            padding: 6px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Gráfico de Ações B3</h2>
+
+    <div class="filtros">
+        <label>Ação (ex: BEEF3, PETR4):
+            <input type="text" id="input_ticker" value="{{ ticker|default:'BEEF3' }}">
+        </label>
+        <label>Data Início:
+            <input type="date" id="data_inicio">
+        </label>
+        <label>Data Fim:
+            <input type="date" id="data_fim">
+        </label>
+        <button onclick="carregarGrafico()">Atualizar</button>
+    </div>
+
+    <div class="grafico-container">
+        <canvas id="grafico"></canvas>
+    </div>
+
+    <script>
+        let graficoInstance = null;
+
+        function getDataFormatada(data) {
+            return data.toISOString().split('T')[0];
+        }
+
+        function carregarGrafico() {
+            const ticker = document.getElementById('input_ticker').value.toUpperCase().trim();
+            const inicio = document.getElementById('data_inicio').value;
+            const fim = document.getElementById('data_fim').value;
+
+            if (!ticker) {
+                alert('Digite o código da ação.');
+                return;
+            }
+
+            let url = `/grafico/${ticker}/`;
+            const params = [];
+            if (inicio) params.push(`data_inicio=${inicio}`);
+            if (fim) params.push(`data_fim=${fim}`);
+            if (params.length > 0) url += '?' + params.join('&');
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+                    return response.json();
+                })
+                .then(dados => {
+                    if (!Array.isArray(dados)) throw new Error('Resposta inválida');
+
+                    const labels = dados.map(item => item.data);
+                    const fechamento = dados.map(item => item.fechamento);
+                    const wma17 = dados.map(item => item.wma17);
+                    const wma34 = dados.map(item => item.wma34);
+                    const wma72 = dados.map(item => item.wma72);
+                    const wma144 = dados.map(item => item.wma144);
+                    const wma602 = dados.map(item => item.wma602);
+
+                    const ctx = document.getElementById('grafico').getContext('2d');
+
+                    if (graficoInstance) graficoInstance.destroy();
+
+                    graficoInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels,
+                            datasets: [
+                                { label: 'Fechamento', data: fechamento, borderColor: 'black', borderWidth: 1.5, fill: false },
+                                { label: 'WMA17', data: wma17, borderColor: 'blue', borderWidth: 1, fill: false },
+                                { label: 'WMA34', data: wma34, borderColor: 'green', borderWidth: 1, fill: false },
+                                { label: 'WMA72', data: wma72, borderColor: 'orange', borderWidth: 1, fill: false },
+                                { label: 'WMA144', data: wma144, borderColor: 'purple', borderWidth: 1, fill: false },
+                                { label: 'WMA602', data: wma602, borderColor: 'red', borderWidth: 2, fill: false }
+                            ]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { position: 'bottom' } },
+                            interaction: { mode: 'index', intersect: false },
+                            scales: {
+                                x: { ticks: { maxTicksLimit: 10 } },
+                                y: { beginAtZero: false }
+                            }
+                        }
+                    });
+                })
+                .catch(erro => {
+                    console.error('Erro ao buscar os dados do gráfico:', erro);
+                    alert('Não foi possível carregar os dados do gráfico.');
+                });
+        }
+
+        // Define datas padrão: últimos 30 dias
+        window.onload = function () {
+            const hoje = new Date();
+            const trintaDiasAtras = new Date();
+            trintaDiasAtras.setDate(hoje.getDate() - 30);
+
+            document.getElementById('data_fim').value = getDataFormatada(hoje);
+            document.getElementById('data_inicio').value = getDataFormatada(trintaDiasAtras);
+
+            carregarGrafico();
+        }
+    </script>
+</body>
+</html>
+
