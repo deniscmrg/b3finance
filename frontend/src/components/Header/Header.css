@@ -1,0 +1,12 @@
+.header {
+  background-color: var(--amarelo-principal);
+  color: var(--branco);
+  font-size: 24px;
+  font-weight: bold;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 2px 6px var(--amarelo-borda);
+  letter-spacing: 1px;
+  border-bottom: 3px solid #b88f00;
+}
+

@@ -46,6 +46,7 @@ class RecomendacaoDiaria(models.Model):
     comentario = models.TextField(null=True, blank=True)
     data_alvo = models.DateField(null=True, blank=True)
     fechamento_alvo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    posicao_alvo = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     #memórica de cálculo do score
     subindo_3dias = models.BooleanField(null=True, blank=True)
