@@ -1,4 +1,7 @@
 from django.db import models
+from decimal import Decimal
+
+
 
 class Acao(models.Model):
     ticker = models.CharField(max_length=10, unique=True)
@@ -60,3 +63,41 @@ class RecomendacaoDiaria(models.Model):
     class Meta:
         unique_together = ('acao', 'data')
 
+class Cliente(models.Model):
+    nome = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+    documento = models.CharField(max_length=20, unique=True)  # CPF ou CNPJ
+    telefone = models.CharField(max_length=20, blank=True)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.nome} ({self.email})'
+
+class OperacaoCarteira(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    acao = models.ForeignKey(Acao, on_delete=models.CASCADE)
+    data_compra = models.DateField()
+    preco_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+    quantidade = models.IntegerField()
+    valor_total_compra = models.DecimalField(max_digits=12, decimal_places=2)
+
+    data_venda = models.DateField(null=True, blank=True)
+    preco_venda_unitario = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    valor_total_venda = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+
+    def calcular_valor_total_compra(self):
+        return Decimal(self.preco_unitario) * self.quantidade
+
+    def calcular_valor_total_venda(self):
+        if self.preco_venda_unitario:
+            return Decimal(self.preco_venda_unitario) * self.quantidade
+        return None
+
+    def lucro_percentual(self):
+        if self.valor_total_venda and self.valor_total_compra:
+            lucro = ((self.valor_total_venda / self.valor_total_compra) - 1) * 100
+            return round(lucro, 2)
+        return None
+
+    def __str__(self):
+        return f'{self.cliente.nome} - {self.acao.ticker} ({self.data_compra})'

@@ -1,10 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from cotacoes.models import Cotacao, Acao 
 from django.utils.dateparse import parse_date
 from datetime import timedelta, date
 from cotacoes.models import RecomendacaoDiaria, Acao
 from django.db.models import F
+import yfinance as yf
+from decimal import Decimal, ROUND_HALF_UP
+from .models import Cliente, OperacaoCarteira
 
 def grafico_score_html(request):
     return render(request, 'cotacoes/grafico-score.html')
@@ -90,3 +93,43 @@ def dados_grafico(request, ticker):
     ]
 
     return JsonResponse(dados, safe=False)
+
+
+
+def carteira_cliente(request, cliente_id):
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+    operacoes = OperacaoCarteira.objects.filter(cliente=cliente, data_venda__isnull=True).select_related('acao')
+
+    dados_carteira = []
+    for op in operacoes:
+        ticker = op.acao.ticker + '.SA'  # yfinance usa .SA para ações da B3
+        # cotacao_hoje = yf.Ticker(ticker).history(period="1d")  # cotação mais recente
+        # fechamento_atual = cotacao_hoje['Close'].iloc[-1] if not cotacao_hoje.empty else None
+
+        fechamento_atual = None
+        try:
+            cotacao_hoje = yf.Ticker(ticker).history(period="1d")
+            if not cotacao_hoje.empty:
+                fechamento_atual = cotacao_hoje['Close'].iloc[-1]
+        except Exception as e:
+            print(f"Erro ao buscar {ticker}: {e}")
+
+        
+        alvo = float(op.preco_unitario) * 1.05 if op.preco_unitario else None
+        perc_lucro = None
+        if fechamento_atual:
+            perc_lucro = ((Decimal(fechamento_atual) / op.preco_unitario - 1) * 100).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+
+        dados_carteira.append({
+            'ticker': op.acao.ticker,
+            'data_compra': op.data_compra.strftime('%d/%m/%Y'),
+            'preco_compra': float(op.preco_unitario),
+            'alvo': round(alvo, 2) if alvo else None,
+            'cotacao_atual': round(float(fechamento_atual), 2) if fechamento_atual else 'N/D',
+            'perc_lucro': f'{perc_lucro}%' if perc_lucro is not None else 'N/D'
+        })
+
+    return render(request, 'cotacoes/carteira_cliente.html', {
+        'cliente': cliente,
+        'carteira': dados_carteira
+    })
