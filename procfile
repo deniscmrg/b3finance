@@ -1,1 +1,1 @@
-echo "web: gunicorn backend.wsgi" > Procfile
+web: python manage.py runserver 0.0.0.0:8000
