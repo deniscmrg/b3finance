@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 # from decouple import config
 
@@ -24,12 +24,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-wpt+rp_^&gq^p__kq+(xm6*-+$z%94+mb1i6rjs#gr@)5eb!^i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
+
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
 
 # DEBUG = config('DEBUG', default=False, cast=bool)
 
 # ALLOWED_HOSTS = ["*"]  # ou ["b3finance.up.railway.app"]
 
+SECRET_KEY = os.getenv('SECRET_KEY', 'chave_insegura')
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -62,17 +67,28 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 #local
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.mysql',
+#        'NAME': 'b3analise',
+#        'USER': 'root',
+#        'PASSWORD': 'D@nte512',
+#        'HOST': 'localhost',
+#        'PORT': '3306',
+#        'OPTIONS': {
+#            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
+#        }
+#    }
+#}
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'b3analise',
-        'USER': 'root',
-        'PASSWORD': 'D@nte512',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+        'NAME': os.getenv('MYSQLDATABASE'),
+        'USER': os.getenv('MYSQLUSER'),
+        'PASSWORD': os.getenv('MYSQLPASSWORD'),
+        'HOST': os.getenv('MYSQLHOST'),
+        'PORT': os.getenv('MYSQLPORT', '3306'),
     }
 }
 
