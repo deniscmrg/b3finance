@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Evolução do Score das Ações</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .filtros {
+            margin-bottom: 20px;
+        }
+
+        .grafico-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <h2>Evolução do Score das Ações (últimos 30 dias)</h2>
+
+    <div class="grafico-container">
+        <canvas id="grafico"></canvas>
+    </div>
+
+    <script>
+        let graficoInstance = null;
+
+        fetch('/grafico/todas-acoes/')  // Endpoint que deve retornar JSON com várias ações e datas
+            .then(response => {
+                if (!response.ok) throw new Error(`Erro HTTP ${response.status}`);
+                return response.json();
+            })
+            .then(dados => {
+                const labels = dados.datas;  // datas comuns no eixo X
+                const cores = ['red', 'blue', 'green', 'orange', 'purple', 'brown', 'black', 'teal', 'coral', 'navy'];
+
+                const datasets = dados.acoes.map((acao, idx) => ({
+                    label: acao.ticker,
+                    data: acao.scores,
+                    borderColor: cores[idx % cores.length],
+                    borderWidth: 1.5,
+                    fill: false
+                }));
+
+                const ctx = document.getElementById('grafico').getContext('2d');
+                if (graficoInstance) graficoInstance.destroy();
+
+                graficoInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' },
+                            tooltip: { mode: 'index', intersect: false }
+                        },
+                        interaction: { mode: 'index', intersect: false },
+                        scales: {
+                            x: { ticks: { maxTicksLimit: 15 } },
+                            y: { beginAtZero: true, title: { display: true, text: 'Score' } }
+                        }
+                    }
+                });
+            })
+            .catch(erro => {
+                console.error('Erro ao carregar os dados:', erro);
+                alert('Erro ao carregar os dados do gráfico.');
+            });
+    </script>
+</body>
+</html>

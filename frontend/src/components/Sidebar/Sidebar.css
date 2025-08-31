@@ -1,0 +1,36 @@
+.sidebar {
+  width: 220px;
+  background-color: var(--branco);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.05);
+  height: 100vh;
+}
+
+/* Botões da Sidebar com o mesmo padrão de cor */
+.botao-sidebar {
+  background-color: var(--amarelo-principal);
+  color: var(--branco);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--amarelo-borda);
+  transition: all 0.2s ease-in-out;
+  text-align: left;
+}
+
+.botao-sidebar:hover {
+  background-color: var(--amarelo-principal);
+}
+
+.botao-sidebar:active {
+  box-shadow: 0 2px 0 var(--amarelo-principal);
+  transform: translateY(2px);
+}
+
+

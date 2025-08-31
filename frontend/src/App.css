@@ -1,0 +1,94 @@
+/* Cores principais */
+:root {
+  --amarelo-principal: #cfb254;
+  --amarelo-hover: #a78624;
+  --amarelo-borda: #9c7a00;
+  --fundo-claro: #fdfcf5;
+  --cinza-texto: #333;
+  --cinza-borda: #ccc;
+  --branco: #ffffff;
+}
+
+/* Reset básico */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--fundo-claro);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--cinza-texto);
+}
+
+/* Botões */
+.botao {
+  background-color: var(--amarelo-principal);
+  color: var(--branco);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 var(--amarelo-borda);
+  transition: 0.2s ease;
+}
+
+.botao:hover {
+  background-color: var(--amarelo-hover);
+}
+
+.botao:active {
+  box-shadow: 0 2px 0 var(--amarelo-borda);
+  transform: translateY(2px);
+}
+
+/* Tabela */
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.tabela th {
+  background-color: var(--amarelo-hover);
+  color: #222;
+  padding: 12px;
+  text-align: left;
+}
+
+.tabela td {
+  background-color: #fff;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Inputs */
+input[type="text"],
+select {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--cinza-borda);
+  background-color: #fff;
+  font-size: 14px;
+  margin: 8px 0;
+  width: 100%;
+  max-width: 300px;
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:focus,
+select:focus {
+  border-color: var(--amarelo-principal);
+  outline: none;
+}
+
+/* Caixas ou cards */
+.caixa {
+  background-color: #fff;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
