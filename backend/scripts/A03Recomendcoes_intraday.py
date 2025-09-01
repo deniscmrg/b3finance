@@ -19,7 +19,6 @@ from cotacoes.models import Cotacao
 from cotacoes.models import RecomendacaoDiaria, Acao
 
 
-
 def gerar_recomendacoes(top_n=30):
     ultima_data = Cotacao.objects.aggregate(ultima=Max('data'))['ultima']
     if not ultima_data:
@@ -100,7 +99,11 @@ def gerar_recomendacoes(top_n=30):
         print("⚠️ Nenhuma ação válida após limpeza dos dados.")
         return
 
-    modelo = joblib.load(r"C:\b3analise\modelos\modelo_random_forest.pkl")
+    modelo_path = os.path.join(os.path.dirname(__file__), "..", "modelos", "modelo_random_forest.pkl")
+    modelo_path = os.path.abspath(modelo_path)
+
+    #modelo = joblib.load(r"C:\b3analise\modelos\modelo_random_forest.pkl")
+    modelo = modelo_path
     X_pred = df[[
         'fechamento_div_wma602',
         'wma17_div_wma34',
