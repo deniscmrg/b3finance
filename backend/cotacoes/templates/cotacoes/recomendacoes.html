@@ -1,0 +1,206 @@
+<!-- <!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Recomendações</title>
+</head>
+<body>
+  <h1>Recomendações do dia</h1>
+
+  <form method="post" action="{% url 'recomendacoes' %}">
+    {% csrf_token %}
+    <button type="submit">🔄 Atualizar</button>
+  </form>
+
+  {% if messages %}
+    {% for message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
+  <table border="1" cellpadding="5">
+    <tr>
+      <th>Ticker</th>
+      <th>Empresa</th>
+      <th>Setor</th>
+      <th>Data</th>
+      <th>Preço compra</th>
+      <th>Alvo sugerido</th>
+      <th>% Estimado</th>
+      <th>Probabilidade</th>
+      <th>Vezes alvo 1m</th>
+      <th>Cruza médias</th>
+      <th>OBV ↑</th>
+      <th>Volume ↑</th>
+      <th>WMA602</th>
+      <th>Origem</th>
+    </tr>
+    {% for r in rows %}
+      <tr>
+        <td>{{ r.ticker }}</td>
+        <td>{{ r.empresa }}</td>
+        <td>{{ r.setor }}</td>
+        <td>{{ r.data }}</td>
+        <td>{{ r.preco_compra }}</td>
+        <td>{{ r.alvo_sugerido }}</td>
+        <td>{{ r.percentual_estimado }}</td>
+        <td>{{ r.probabilidade }}</td>
+        <td>{{ r.vezes_atingiu_alvo_1m }}</td>
+        <td>{{ r.cruza_medias }}</td>
+        <td>{{ r.obv_cres }}</td>
+        <td>{{ r.vol_acima_media }}</td>
+        <td>{{ r.wma602 }}</td>
+        <td>{{ r.origem }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="14">Nenhum registro.</td></tr>
+    {% endfor %}
+  </table>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Recomendações do Dia</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .container {
+      max-width: 1800px;
+      margin: auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    form {
+      text-align: right;
+      margin-bottom: 15px;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .messages {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+      background: #e7f3ff;
+      color: #084298;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #007bff;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    tr:hover {
+      background: #f1f1f1;
+    }
+    .empty {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Recomendações do Dia</h1>
+
+    <form method="post" action="{% url 'recomendacoes' %}">
+      {% csrf_token %}
+      <button type="submit">🔄 Atualizar</button>
+    </form>
+
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <table>
+      <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Empresa</th>
+          <th>Setor</th>
+          <th>Data</th>
+          <th>Preço compra</th>
+          <th>Alvo sugerido</th>
+          <th>% Estimado</th>
+          <th>Probabilidade</th>
+          <th>Vezes alvo 1m</th>
+          <th>Cruza médias</th>
+          <th>OBV ↑</th>
+          <th>Volume ↑</th>
+          <th>WMA602</th>
+          <th>Origem</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+         <tr>
+            <td>{{ r.ticker }}</td>
+            <td>{{ r.empresa }}</td>
+            <td>{{ r.setor }}</td>
+            <td>{{ r.data }}</td>
+            <td>{{ r.preco_compra }}</td>
+            <td>{{ r.alvo_sugerido }}</td>
+            <td>{{ r.percentual_estimado }}</td>
+            <td>{{ r.probabilidade }}</td>
+            <td>{{ r.vezes_atingiu_alvo_1m }}</td>
+            <td>{% if r.cruza_medias %}✅{% else %}❌{% endif %}</td>
+            <td>{% if r.obv_cres %}✅{% else %}❌{% endif %}</td>
+            <td>{% if r.vol_acima_media %}✅{% else %}❌{% endif %}</td>
+            <td>{{ r.wma602 }}</td>
+            <td>{{ r.origem }}</td>
+        </tr>
+        {% empty %}
+          <tr>
+            <td colspan="14" class="empty">Nenhum registro encontrado.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
+
+
+

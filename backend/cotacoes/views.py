@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from cotacoes.models import Cotacao, Acao 
 from django.utils.dateparse import parse_date
@@ -7,7 +7,12 @@ from cotacoes.models import RecomendacaoDiaria, Acao
 from django.db.models import F
 import yfinance as yf
 from decimal import Decimal, ROUND_HALF_UP
-from .models import Cliente, OperacaoCarteira
+from .models import Cliente, OperacaoCarteira, RecomendacaoDiariaAtual
+from django.contrib import messages
+import sys, subprocess
+from pathlib import Path
+
+
 
 def grafico_score_html(request):
     return render(request, 'cotacoes/grafico-score.html')
@@ -133,3 +138,42 @@ def carteira_cliente(request, cliente_id):
         'cliente': cliente,
         'carteira': dados_carteira
     })
+
+
+
+def atualizar_recomendacoes(request):
+    if request.method == "POST":
+        # roda seu script python
+        subprocess.run(["python3", "backend/scripts/A03Recomendcoes_intraday.py"])
+    return redirect("recomendacoes")
+
+
+def recomendacoes_view(request):
+    dados = RecomendacaoDiariaAtual.objects.all()
+    return render(request, "recomendacoes.html", {"dados": dados})
+
+
+# recomendações
+def _run_recomendacoes():
+    try:
+        from scripts.A03Recomendcoes_intraday import gerar_recomendacoes
+        gerar_recomendacoes()
+        return True, "Recomendações atualizadas com sucesso."
+    except Exception:
+        try:
+            base_dir = Path(__file__).resolve().parents[1]
+            script = base_dir / "scripts" / "A03Recomendcoes_intraday.py"
+            subprocess.check_call([sys.executable, str(script)])
+            return True, "Recomendações atualizadas (subprocesso)."
+        except Exception as e_sub:
+            return False, f"Erro: {e_sub}"
+
+def recomendacoes_view(request):
+    if request.method == "POST":
+        ok, msg = _run_recomendacoes()
+        messages.success(request, msg) if ok else messages.error(request, msg)
+
+    qs = RecomendacaoDiariaAtual.objects.all()
+    return render(request, "cotacoes/recomendacoes.html", {"rows": qs})
+
+

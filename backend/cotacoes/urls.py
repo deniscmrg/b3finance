@@ -7,4 +7,10 @@ urlpatterns = [
     path('grafico/<str:ticker>/', views.dados_grafico, name='dados_grafico'),
     path('ver-grafico/<str:ticker>/', views.grafico_view, name='grafico_view'),
     path('carteira/<int:cliente_id>/', views.carteira_cliente, name='carteira_cliente'),
+    path('recomendacoes/', views.recomendacoes_view, name='recomendacoes'),
+   path('recomendacoes/atualizar/', views.atualizar_recomendacoes, name='atualizar_recomendacoes'),
 ]
+
+
+
+

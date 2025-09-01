@@ -138,3 +138,29 @@ class RecomendacaoSimulada(models.Model):
 
     class Meta:
         unique_together = ('acao', 'data')
+
+    
+
+from django.db import models
+
+class RecomendacaoDiariaAtual(models.Model):
+    acao_id = models.IntegerField(primary_key=True) 
+    ticker = models.CharField(max_length=20)
+    empresa = models.CharField(max_length=255)
+    setor = models.CharField(max_length=255, null=True, blank=True)
+    data = models.DateField()
+    preco_compra = models.DecimalField(max_digits=12, decimal_places=2)
+    alvo_sugerido = models.DecimalField(max_digits=12, decimal_places=2)
+    percentual_estimado = models.DecimalField(max_digits=6, decimal_places=2)
+    probabilidade = models.DecimalField(max_digits=6, decimal_places=4)
+    vezes_atingiu_alvo_1m = models.IntegerField()
+    cruza_medias = models.BooleanField()
+    obv_cres = models.BooleanField()
+    vol_acima_media = models.BooleanField()
+    wma602 = models.BooleanField()
+    origem = models.CharField(max_length=50)
+
+    class Meta:
+        managed = False   # não deixa o Django tentar criar/dropar
+        db_table = "vw_recomendacoes_diarias_atual"
+
