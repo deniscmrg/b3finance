@@ -23,3 +23,12 @@ yarn-debug.log*
 yarn-error.log*
 
 *.pkl
+
+backend/backend/settings.py
+
+# Python
+__pycache__/
+*.pyc
+
+# Dumps
+dumpb3.sql

@@ -1,9 +1,7 @@
 import A01CargaDiaria as carga
 import A02CalculaMedias as medias
-import A04RecomendacoesScore as relatorio_SC
-import A05RecomendacoesIA as relatorio_IA
 import A03VerificaAlvos as alvo
-import A06CargaRecomendacaoSimulada as simulada
+import A03Recomendcoes_intraday as recomenda
 
 
 def main():
@@ -13,11 +11,8 @@ def main():
     medias.calcular_todas()
     print("=== VERIFICA ALVOS ===")
     alvo.verificar_alvos_recomendacoes()
-    print("=== RECOMENDAÇÕES SIMULADAS ===")
-    simulada.atualizar_recomendacoes_simuladas()
-    print("=== RELATORIO DE REVERSÃO ===")
-    relatorio_SC.analisar_potencial_reversao()
-    #relatorio_IA.gerar_recomendacoes_hoje()
+    print("=== RELATORIO DE RECOMENDACOES ===")
+    recomenda.gerar_recomendacoes()
 
 
 if __name__ == '__main__':
